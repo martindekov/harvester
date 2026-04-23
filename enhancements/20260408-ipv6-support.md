@@ -71,11 +71,21 @@ The proposal aligns with Harvester v1.7+ networking architecture, which uses Net
 - Ensure the Harvester web UI, API, and VM VNC/Serial console proxy are reachable via the IPv6 management VIP. This requires the Ingress controller to bind on IPv6 and the console proxy to accept IPv6 connections, so that operators and users in IPv6-only environments can reach all management surfaces.
 - Support IPv6 addressing on the VM live migration network so VMs can be live-migrated between nodes in IPv6-only and dual-stack clusters. The migration network is a `HostNetworkConfig`-managed VLAN; IPv6 support there follows directly from the host network config changes in this HEP. KubeVirt selects the migration network via a `NetworkAttachmentDefinition` and binds the migration server on the interface address — both Multus and KubeVirt v1.7.0 support IPv6 for this path.
 - Support IPv6 addressing on the dedicated Longhorn storage network (VLAN). The storage network is configured via the Harvester `storage-network` setting which references a Multus `NetworkAttachmentDefinition`; IPv6 support requires extending the setting schema to accept an IPv6 or dual-stack CIDR, updating the Whereabouts IP pool configuration, and generating the NAD with the correct CIDR. Longhorn v1.11.1 imposes no IPv4-only restriction on the storage network — the address family is determined by the NAD delegate config.
+(longhorn is not supporting dual stack - https://github.com/longhorn/longhorn/issues/11531)
 
+
+due to this offset the dual stack and leave ipv6
+
+in 
+
+https://jira.suse.com/browse/SURE-4992
+
+
+Can we configure the longhorn to work with ipv4 only in the dual stack scenario?
 ### Non-goals
 
 - Replacing current CNI architecture in this HEP.
-- Implementing NAT64, DNS64, or other protocol translation services.
+- Implementing NAT64, DNS64, or other protocol translation services. OWNERS can have their infrastructure IMPLEMENTING THOSE PROTOCOLS
 - Automatic conversion of all existing IPv4-only user network definitions to IPv6.
 - Guest OS IPv6 configuration: injecting IPv6 addresses via Cloud-Init after NIC attachment, or displaying IPv6 addresses reported by the qemu-guest-agent in the UI. The VM NIC is attached with IPv6 capability at the network layer; address configuration inside the guest is guest-OS-specific and out of scope for this HEP.
 - DHCPv6 support. DHCPv6 requires server infrastructure that is not present in all IPv6 environments. IPv4 parity for dynamic addressing is satisfied by SLAAC for this HEP, since SLAAC is the infrastructure-free native mechanism. DHCPv6 can be revisited in a future HEP once SLAAC support is stable.
