@@ -26,7 +26,9 @@ func (h *Handler) addVIPToSAN() error {
 		return err
 	}
 
-	toAddAnnotation := tlsCNPrefix + vipConfig.IP
+	//toAddAnnotation := tlsCNPrefix + vipConfig.IP
+	sanitizedIP := strings.ReplaceAll(vipConfig.IP, ":", "-")
+	toAddAnnotation := tlsCNPrefix + sanitizedIP
 	if _, ok := secret.Annotations[toAddAnnotation]; ok {
 		return nil
 	}
